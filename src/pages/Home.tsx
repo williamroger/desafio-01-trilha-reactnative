@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Alert } from 'react-native';
 
 import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
@@ -10,6 +10,25 @@ export function Home() {
 
   function handleAddTask(newTaskTitle: string) {
     //TODO - add new task
+    const taskExists = tasks.find(task => task.title === newTaskTitle);
+    if (taskExists) {
+      const handleAlertOnwOption = () => {
+        Alert.alert(
+          'Atenção',
+          'Você não pode cadastrar uma task com o mesmo nome',
+          [
+            {
+              text: 'Ok, entendi.',
+              onPress: () => console.log('Ação cancelada pelo usuário.'),
+              style: 'default',
+            }
+          ]
+        )
+      }
+
+      handleAlertOnwOption();
+      return;
+    }
     const newTask = {
       id: new Date().getTime(),
       title: newTaskTitle,
