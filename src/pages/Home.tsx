@@ -12,7 +12,7 @@ export function Home() {
     //TODO - add new task
     const taskExists = tasks.find(task => task.title === newTaskTitle);
     if (taskExists) {
-      const handleAlertOnwOption = () => {
+      const handleAlertOneOption = () => {
         Alert.alert(
           'Atenção',
           'Você não pode cadastrar uma task com o mesmo nome',
@@ -26,7 +26,7 @@ export function Home() {
         )
       }
 
-      handleAlertOnwOption();
+      handleAlertOneOption();
       return;
     }
     const newTask = {
@@ -51,7 +51,26 @@ export function Home() {
 
   function handleRemoveTask(id: number) {
     //TODO - remove task from state
-    setTasks(oldState => oldState.filter(task => task.id !== id));
+    const handleAlertTwoOptions = () => {
+      Alert.alert(
+        'Remover item',
+        'Tem certeza que você deseja remover esse item?',
+        [
+          {
+            text: 'Não',
+            onPress: () => console.log('Ação cancelada pelo usuário.'),
+            style: 'cancel'
+          },
+          {
+            text: 'Sim',
+            onPress: () => setTasks(oldState => oldState.filter(task => task.id !== id)),
+            style: 'default',
+          }
+        ]
+      )
+    }
+
+    handleAlertTwoOptions();
   }
 
   return (
