@@ -5,6 +5,11 @@ import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
 import { TodoInput } from '../components/TodoInput';
 
+interface TaskEditProps {
+  taskId: number;
+  taskNewTitle: string;
+}
+
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -71,6 +76,10 @@ export function Home() {
     }
 
     handleAlertTwoOptions();
+  }
+
+  function handleEditTask(taskEdited: TaskEditProps) {
+
   }
 
   return (
