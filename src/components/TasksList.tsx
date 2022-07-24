@@ -10,11 +10,16 @@ export interface Task {
   done: boolean;
 }
 
+interface TaskEdit {
+  taskId: number;
+  taskNewTitle: string;
+}
+
 interface TasksListProps {
   tasks: Task[];
   toggleTaskDone: (id: number) => void;
   removeTask: (id: number) => void;
-  editTask: (id: number) => void;
+  editTask: (task: TaskEdit) => void;
 }
 
 export function TasksList({

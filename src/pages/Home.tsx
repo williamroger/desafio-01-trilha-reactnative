@@ -5,7 +5,7 @@ import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
 import { TodoInput } from '../components/TodoInput';
 
-interface TaskEditProps {
+interface TaskEdit {
   taskId: number;
   taskNewTitle: string;
 }
@@ -78,8 +78,14 @@ export function Home() {
     handleAlertTwoOptions();
   }
 
-  function handleEditTask(taskEdited: TaskEditProps) {
+  function handleEditTask(taskEdited: TaskEdit) {
+    const updatedTasks = tasks.map(task => {
+      if (task.id === taskEdited.taskId) return { ...task, title: taskEdited.taskNewTitle };
 
+      return task;
+    });
+
+    setTasks(updatedTasks);
   }
 
   return (
@@ -92,6 +98,7 @@ export function Home() {
         tasks={tasks}
         toggleTaskDone={handleToggleTaskDone}
         removeTask={handleRemoveTask}
+        editTask={handleEditTask}
       />
     </View>
   )

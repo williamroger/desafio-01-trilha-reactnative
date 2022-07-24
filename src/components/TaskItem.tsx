@@ -1,7 +1,9 @@
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import trashIcon from '../assets/icons/trash/trash.png'
+import trashIcon from '../assets/icons/trash/trash.png';
+import editIcon from '../assets/icons/edit/edit.png';
+import cancelIcon from '../assets/icons/cancel/cancel.png';
 
 export interface Task {
   id: number;
@@ -9,12 +11,17 @@ export interface Task {
   done: boolean;
 }
 
+interface TaskEdit {
+  taskId: number;
+  taskNewTitle: string;
+}
+
 interface TaskItemProps {
   index: number;
   task: Task;
   toggleTaskDone: (id: number) => void;
   removeTask: (id: number) => void;
-  editTask: (id: number) => void;
+  editTask: (task: TaskEdit) => void;
 }
 
 export function TaskItem({
@@ -24,6 +31,37 @@ export function TaskItem({
   removeTask,
   editTask
 }: TaskItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [taskTitle, setTaskTitle] = useState(task.title);
+  const textInputRef = useRef<TextInput>(null);
+
+  function handleStartEditing() {
+    setIsEditing(true);
+  }
+
+  function handleCancelEditing() {
+    setTaskTitle(task.title);
+    setIsEditing(false);
+  }
+
+  function handleSubmitEditing() {
+    editTask({
+      taskId: task.id,
+      taskNewTitle: taskTitle,
+    });
+    setIsEditing(false);
+  }
+
+  useEffect(() => {
+    if (textInputRef.current) {
+      if (isEditing) {
+        textInputRef.current.focus();
+      } else {
+        textInputRef.current.blur();
+      }
+    }
+  }, [isEditing]);
+
   return (
     <>
       <View>
@@ -48,28 +86,53 @@ export function TaskItem({
             )}
           </View>
 
-          <Text
+          <TextInput
+            //TODO - use style prop
+            ref={textInputRef}
             style={task.done ? styles.taskTextDone : styles.taskText}
-          //TODO - use style prop
-          >
-            {task.title}
-          </Text>
+            value={taskTitle}
+            onChangeText={setTaskTitle}
+            editable={isEditing}
+            onSubmitEditing={handleSubmitEditing}
+          />
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity
-        testID={`trash-${index}`}
-        style={{ paddingHorizontal: 24 }}
-        onPress={() => removeTask(task.id)}
-      //TODO - use onPress (remove task) prop
-      >
-        <Image source={trashIcon} />
-      </TouchableOpacity>
+      <View style={styles.containerButtons}>
+        {isEditing ? (
+          <TouchableOpacity
+            testID={`cancel-${index}`}
+            onPress={handleCancelEditing}
+          >
+            <Image source={cancelIcon} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            testID={`edit-${index}`}
+            onPress={handleStartEditing}
+          >
+            <Image source={editIcon} />
+          </TouchableOpacity>
+        )}
+        <View style={styles.buttonSeparator} />
+        <TouchableOpacity
+          testID={`trash-${index}`}
+          onPress={() => removeTask(task.id)}
+          style={{ paddingRight: 24 }}
+          disabled={isEditing}
+        //TODO - use onPress (remove task) prop
+        >
+          <Image source={trashIcon} style={{ opacity: isEditing ? 0.2 : 1 }} />
+        </TouchableOpacity>
+      </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  containerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   taskButton: {
     flex: 1,
     paddingHorizontal: 24,
@@ -78,6 +141,12 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  buttonSeparator: {
+    width: 1,
+    height: 24,
+    backgroundColor: 'rgba(196, 196, 196, 0.24)',
+    marginHorizontal: 14,
   },
   taskMarker: {
     height: 16,
